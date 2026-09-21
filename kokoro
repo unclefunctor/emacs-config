@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Note: "https://github.com/remsky/Kokoro-FastAPI" and xclip need to be installed
+#
+#   Starts the Kokoro docker container in the background if it is not running,
+# except for the "-s" option
+#
+#   -s stops the container
+#   -d exits after the container is running
+#   -w launchs web API in Chrome after the container is running
+#   -c plays clipboard after the container is running
+#
+#   otherwise it plays $1 after the container is running, or pass in
+#      nothing for $1 if you only want to start the container in the BG, or
+#      stop the current playback
+
+image="ghcr.io/remsky/kokoro-fastapi-cpu:v0.9.0"
+
+id="$(sudo docker ps -q --filter "ancestor=$image")"
+killall aplay &> /dev/null
+delay=0
+
+if [ -z "$id" ]; then
+   if [ "$1" == "-s" ]; then
+      exit 0
+   else
+      echo "Starting the TTS container…"
+      nohup sudo docker run --rm -d -p 8880:8880 "$image" &> /tmp/kokoro.out &
+      sleep 0.1   # when BG starting, the docker process needs time to detach before this process ends
+      delay=1
+   fi
+fi
+
+notify_starting() {
+   if [ "$delay" -eq 1 ]; then
+      notify-send -t 15000 "🔔 Starting the TTS container…"
+      sleep 15
+   fi
+}
+
+text=""
+if   [ "$1" = "-s" ]; then
+   nohup sudo docker stop "$id" &> /dev/null &
+elif [ "$1" = "-d" ]; then
+   notify_starting
+elif [ "$1" = "-w" ]; then
+   notify_starting
+   nohup chrome "http://localhost:8880/web/" &> /dev/null &
+elif [ "$1" = "-c" ]; then
+   text="$(xclip -o)"
+elif [ -n "$1" ]; then
+   text="$1"
+fi
+
+if [ -n "$text" ]; then
+   notify_starting
+   curl -s http://localhost:8880/v1/audio/speech \
+        -H 'Content-Type: application/json' \
+        -d "$(jq -n --arg text "$text" '{
+                 model: "kokoro",
+                 input: $text,
+                 voice: "im_nicola",
+                 lang_code: "a",
+                 response_format: "wav"
+            }')" | aplay >& /dev/null
+fi

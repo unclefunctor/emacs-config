@@ -47,7 +47,7 @@
 
   (use-package evil-exchange
     :config
-    (evil-exchange-install))              ; uses 'gx' instead of Vim's 'cx'
+    (evil-exchange-cx-install))       ; use Vim's 'cx'instead of 'gx'
 
   (use-package evil-replace-with-register
     :init

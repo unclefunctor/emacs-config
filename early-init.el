@@ -52,5 +52,5 @@
         backup-directory-alist     `(("." . ,backups-d))))
 
 ;; Do now, before it creates the window
-(add-to-list 'initial-frame-alist '(height . 45))
+(add-to-list 'initial-frame-alist '(height . 51))
 (add-to-list 'initial-frame-alist '(width . 120))

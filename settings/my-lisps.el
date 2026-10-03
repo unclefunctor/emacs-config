@@ -2,23 +2,27 @@
 
 (use-package racket-mode
   :mode ("\\.rkt\\'" . racket-mode)
-  :hook ((racket-mode . racket-xp-mode)
-         (racket-repl-mode . my/racket-repl-mode))
+  :hook (
+  (racket-mode . racket-xp-mode)
+  (racket-repl-mode . (lambda ()
+    "My Racket REPL fixes"
+    (edk 'insert racket-repl-mode-map (kbd "<up>") #'racket-repl-previous-input)
+    (edk 'insert racket-repl-mode-map (kbd "<down>") #'racket-repl-next-input)
+    (lsk (kbd "M-n") nil)
+    (lsk (kbd "M-p") nil))))
+
+  :custom
+  (racket-browse-url-function #'eww-browse-url)
+
   :config
   ;; Automatically insert opening bracket
-  (add-hook 'racket-mode-hook #'racket-smart-open-bracket-mode)
-  :custom
-  (racket-browse-url-function #'eww-browse-url))
-
-(defun my/racket-repl-mode ()
-  (edk 'insert racket-repl-mode-map (kbd "<up>") #'racket-repl-previous-input)
-  (edk 'insert racket-repl-mode-map (kbd "<down>") #'racket-repl-next-input)
-  (lsk (kbd "M-n") nil)
-  (lsk (kbd "M-p") nil))
-
+  (add-hook 'racket-mode-hook #'racket-smart-open-bracket-mode))
 
 (use-package geiser
-  :hook (geiser-repl-mode . (lambda ()
+  :defer t
+  :hook
+  (geiser-repl-mode . (lambda ()
+    "My Geiser REPL fixes"
     (edk 'insert geiser-repl-mode-map (kbd "<return>") #'geiser-repl-maybe-send)
     (lsk (kbd "C-S-r") 'comint-history-isearch-backward-regexp)
     (lsk (kbd "M-r") nil)))
@@ -27,7 +31,7 @@
   (setq geiser-active-implementations '(chez))
   (edk '(normal visual) geiser-mode-map (kbd "C-q") #'geiser-doc-symbol-at-point)
   (edk '(normal visual) geiser-mode-map (kbd "C-j") #'(lambda ()
-    "Custom Geiser eval and print"
+    "My Geiser eval and print"
     (interactive)
     (let* ((ip (point))
            (_  (geiser-eval-last-sexp '(4)))
@@ -37,7 +41,8 @@
       (goto-char (+ lp 4)))))
 
   (setq geiser-chez-binary "/usr/bin/chez-scheme")
-  (use-package geiser-chez))
+  (use-package geiser-chez
+    :after geiser))
 
 
 ;; Least painful parens package, I tried the paredit flavors
@@ -59,12 +64,13 @@
   ;; to make it to work on the non-elisp files
   (evil-lisp-state-leader ","))
 
-(use-package smartparens            ; ^^^'s dependency needs configuring
+(use-package smartparens            ; ^^^'s dependency, TODO needs configuring
   :config
   (require 'smartparens-config)
   (smartparens-strict-mode))
 
-(defun my/lisp-mode ()              ; my standard Lisp defaults
+(defun my/lisp-mode ()
+  "Set my standard Lisp defaults"
   (setq-local lisp-indent-offset 2)
   (setq-local tab-width 2)
   (setq-local standard-indent 2)

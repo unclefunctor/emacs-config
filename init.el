@@ -12,14 +12,16 @@
 
 ;; Moar Moar Moar
 (require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("elpa"  . "https://elpa.gnu.org/packages/")))
+(setq package-archives '(("gnu"    . "https://elpa.gnu.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("melpa"  . "https://melpa.org/packages/")))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
 (unless (package-installed-p 'use-package)
   (setq my/first-run t)
   (package-install 'use-package))
+;; (byte-recompile-directory package-user-dir nil 'force) ; eval to recompile the packages
 
 ;; Global settings
 (defmacro comment (&rest body) "Comment out one or more s-expressions." nil)
@@ -40,14 +42,16 @@
 ;; It got too big so I organized it into multiple files
 (add-to-list 'load-path "~/.config/emacs/settings/")
 
-(load-library "my-evil.el")           ; must be first!
+(load-library "my-evil.el")             ; must be first!
 (load-library "my-theme.el")
 (load-library "my-convenience.el")
 (load-library "my-minibuffer.el")
-(load-library "my-lang.el")
+(load-library "my-music.el")
 (load-library "my-lisps.el")
-(load-library "my-fun.el")
+(load-library "my-lang.el")
+(load-library "my-org.el")
 (load-library "my-tts.el")
+(load-library "my-fun.el")
 
 
 ;; Done loading, start the server for emacsclient calls

@@ -6,7 +6,6 @@
 
 (setq-default calc-algebraic-mode t)
 (setq history-length 40
-      recentf-max-saved-items 100
       ispell-program-name "hunspell"
       confirm-kill-emacs #'yes-or-no-p
       browse-url-browser-function #'browse-url-xdg-open)
@@ -15,26 +14,38 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-auto-revert-mode)
 (save-place-mode)
-(recentf-mode)
 
-(add-hook 'emacs-startup-hook (lambda ()
-  (when (and recentf-list (null (cdr command-line-args)))
-    (run-with-idle-timer 1.1 nil (lambda ()    ; this hook fires too soon, so wait. Which
-      (find-file (car recentf-list)))))   ; implies that the init time ⬇⬇⬇ is BS, LoL
-  (message "%d packages in %s" (length package-activated-list) (emacs-init-time))))
+
+(use-package recentf                      ; recent files (used in a lot of other packages)
+  :ensure nil                             ; built in
+
+  :custom
+  (recentf-max-saved-items 40)
+
+  :config
+  (recentf-mode)
+  (add-to-list 'recentf-exclude "emacs/custom\.el")
+  (add-hook 'emacs-startup-hook (lambda ()
+    (when (and recentf-list (null (cdr command-line-args)))
+      (run-with-idle-timer 1.1 nil (lambda ()  ; this hook fires too soon, so wait. Which
+        (find-file (car recentf-list))))) ; implies that the init time ⬇⬇⬇ is BS, LoL
+    (message "%d packages in %s" (length package-activated-list) (emacs-init-time)))))
 
 
 (use-package dired                        ; make it comfy
   :ensure nil                             ; built in
+
   :commands (dired dired-jump)
   :hook (dired-mode . dired-hide-details-mode)
   :bind (:map dired-mode-map ("C-x C-m" . dired-toggle-read-only))
+
   :custom
   (dired-listing-switches "-agho --group-directories-first")
   (dired-recursive-copies 'top)
   (dired-recursive-deletes 'top)
   (delete-by-moving-to-trash t)
   (dired-create-destination-dirs 'ask)
+
   :config
   (use-package all-the-icons-dired
     :hook (dired-mode . all-the-icons-dired-mode)
@@ -75,13 +86,6 @@
   (with-eval-after-load 'em-hist          ; cancel the eshell-hist override
     (dk eshell-hist-mode-map (kbd "M-r") nil))
 
-  (require 'vterm)                        ; vterm is lazy loaded and may not be in memory
-  (use-package eshell-vterm               ; vterm > term-mode  One more reason to switch to Linux 😀
-    :config
-    (eshell-vterm-mode)
-    (add-hook 'vterm-exit-functions (lambda (buf event)
-      (when (string-match-p "finished" event) (kill-buffer buf)))))
-
   (setq eshell-prompt-function #'(lambda ()
     (concat
       (propertize "╭" 'face '(:foreground "firebrick2"))
@@ -105,6 +109,16 @@
                    thereis (and (string-match-p buf-or-regexp (buffer-name b)) b)))))
       (when buf
         (with-current-buffer buf (buffer-substring-no-properties (point-min) (point-max)))))))
+
+
+(use-package eshell-vterm                 ; vterm > term-mode  One more reason to switch to Linux 😀
+  :commands eshell-vterm-mode
+  :hook (eshell-mode . eshell-vterm-mode)
+
+  :config
+  (eshell-vterm-mode)
+  (add-hook 'vterm-exit-functions (lambda (buf event)
+    (when (string-match-p "finished" event) (kill-buffer buf)))))
 
 
 (use-package vterm                        ; by far the best terminal for Vim
@@ -188,24 +202,27 @@
 
 ;; TODO figure out how to use, maybe have eshell send command result to a grep buffer?
 (use-package wgrep  ; modify and save grep buffer results (alternative to sed)
-  ;; :bind (;; Bind the activation command inside the grep-mode buffer
-  ;;        :map grep-mode-map
-  ;;        ("C-x C-q" . wgrep-change-to-wgrep-mode)
-  ;;        ("e" . wgrep-change-to-wgrep-mode))
-  ;; :custom
-  ;; ;; Automatically save underlying file buffers after you press C-c C-e
-  ;; (wgrep-auto-save-buffer t)
-  ;; ;; Keep the grep buffer read-only after applying modifications
+  :bind (;; Bind the activation command inside the grep-mode buffer
+         :map grep-mode-map
+         ("C-x C-q" . wgrep-change-to-wgrep-mode)
+         ("e" . wgrep-change-to-wgrep-mode))
+  :custom
+  ;; Automatically save underlying file buffers after you press C-c C-e
+  (wgrep-auto-save-buffer t)
+  ;; Keep the grep buffer read-only after applying modifications
   ;; (wgrep-change-readonly-file t)
 )
 
 
 (use-package transpose-frame              ; rotate the frames
-  :config
   :bind (:map evil-motion-state-map ("C-w t" . transpose-frame)))
 
 
-(use-package which-key                    ; you can't teach an old dog new tricks
+(use-package sudo-edit                    ; never leave Emacs!
+  :commands sudo-edit)
+
+
+(use-package which-key                    ; Emacs has too many key combos to remember
   :ensure nil                             ; built in
   :config
   (which-key-mode)
@@ -243,7 +260,7 @@
 
 (use-package magit
   :defer t
-  :commands (magit-project-status))
+  :commands magit-project-status)
 
 
 (use-package project

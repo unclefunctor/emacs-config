@@ -4,6 +4,8 @@
 ;;; Misc UI conveniences
 ;;;
 
+(require 'evil)                             ; needed to fix the compiled version
+
 (setq-default calc-algebraic-mode t)
 (setq history-length 40
       ispell-program-name "hunspell"
@@ -24,12 +26,16 @@
 
   :config
   (recentf-mode)
+  (add-to-list 'recentf-exclude "emacs\-31")
+  (add-to-list 'recentf-exclude "/usr/share/")
+  (add-to-list 'recentf-exclude "/emacs/elpa/")
   (add-to-list 'recentf-exclude "emacs/custom\.el")
   (add-hook 'emacs-startup-hook (lambda ()
+    ;; (message "")                          ; start clean, yes I have OCD, what's your point?
+    (message "%d packages in %s" (length package-activated-list) (emacs-init-time))
     (when (and recentf-list (null (cdr command-line-args)))
-      (run-with-idle-timer 1.1 nil (lambda ()  ; this hook fires too soon, so wait. Which
-        (find-file (car recentf-list))))) ; implies that the init time ⬇⬇⬇ is BS, LoL
-    (message "%d packages in %s" (length package-activated-list) (emacs-init-time)))))
+      (run-with-idle-timer 0.1 nil (lambda ()      ; this hook fires too soon, so wait. Which
+        (find-file (car recentf-list))))))))  ; implies that the init time ⬇⬇⬇ is BS, LoL
 
 
 (use-package dired                        ; make it comfy
@@ -37,7 +43,8 @@
 
   :commands (dired dired-jump)
   :hook (dired-mode . dired-hide-details-mode)
-  :bind (:map dired-mode-map ("C-x C-m" . dired-toggle-read-only))
+  :bind (:map dired-mode-map
+          ("C-x C-m" . dired-toggle-read-only))
 
   :custom
   (dired-listing-switches "-agho --group-directories-first")
@@ -47,94 +54,28 @@
   (dired-create-destination-dirs 'ask)
 
   :config
+  (evil-define-key 'normal dired-mode-map (kbd "<return>") 'my/dired-RET)       ; poor man's treemacs
+  (evil-define-key 'normal dired-mode-map (kbd "S-<return>") 'dired-find-file)
+
   (use-package all-the-icons-dired
     :hook (dired-mode . all-the-icons-dired-mode)
     :config
-    (setq all-the-icons-dired-monochrome nil)))
+    (setq all-the-icons-dired-monochrome nil))
 
+  (use-package dired-subtree
+    :bind (:map dired-mode-map
+                ("<tab>" . dired-subtree-toggle)
+                ("<backtab>" . dired-subtree-cycle))
+    :config
+    (setq dired-subtree-use-backgrounds nil)))
 
-(use-package eshell                       ; PITA to customize, but it's the best shell PERIOD
-  :ensure nil                             ; built in
-  :commands eshell
-
-  :init
-  (gsk (kbd "M-t") 'eshell)
-
-  :hook
-  (eshell-mode . (lambda ()
-    (lsk (kbd "M-r")   nil)
-    (lsk (kbd "C-S-r") #'consult-history)
-    (edk 'insert eshell-mode-map (kbd "<up>")     #'eshell-previous-matching-input-from-input)
-    (edk 'insert eshell-mode-map (kbd "<down>")   #'eshell-next-matching-input-from-input)
-    (edk 'insert eshell-mode-map (kbd "M-h")      #'eshell-backward-argument)
-    (edk 'insert eshell-mode-map (kbd "M-l")      #'eshell-forward-argument)
-    (edk 'insert eshell-mode-map (kbd "<return>") #'eshell-send-input)
-    (edk 'insert eshell-mode-map (kbd "C-d") #'(lambda () ; Linux > Windows PERIOD
-      "Make C-d inside an empty line exit"
-      (interactive)
-      (if (eobp)
-        (eshell-life-is-too-much)
-        (delete-char 1))))))
-
-  :config
-  (setq eshell-banner-message "")
-  (evil-set-initial-state 'eshell-mode 'insert)
-
-  ;; Add visual/ncurses programs here:
-  (setq eshell-visual-commands '("htop" "less" "nvim"))
-
-  (with-eval-after-load 'em-hist          ; cancel the eshell-hist override
-    (dk eshell-hist-mode-map (kbd "M-r") nil))
-
-  (setq eshell-prompt-function #'(lambda ()
-    (concat
-      (propertize "╭" 'face '(:foreground "firebrick2"))
-      (propertize "[" 'face '(:foreground "firebrick2" :weight bold))
-      (abbreviate-file-name (eshell/pwd))
-      (propertize "]" 'face '(:foreground "firebrick2" :weight bold))
-      "\n"
-      (propertize "λ" 'face '(:foreground "MediumPurple2" :weight bold))   ; use purpur to show that it is an e(macs)shell
-      " ")))                                                               ; and not vterm
-  (setq eshell-prompt-regexp "^λ ")
-
-  ;; Ripped from https://github.com/agzam/mxp (shell script to pipe in and out of Emacs)
-  ;; The function 'b' can be used to pipe a buffer into an eshell command.  E.g.:
-  ;; b #<> | rg DEBUG
-  ;; or you can press C-c M-b to select a buffer rather than typing #<buffer name>
-  (defun eshell/b (buf-or-regexp)
-    "Output buffer content of buffer matching BUF-OR-REGEXP."
-    (let ((buf (if (bufferp buf-or-regexp)
-                 buf-or-regexp
-                 (cl-loop for b in (buffer-list)
-                   thereis (and (string-match-p buf-or-regexp (buffer-name b)) b)))))
-      (when buf
-        (with-current-buffer buf (buffer-substring-no-properties (point-min) (point-max)))))))
-
-
-(use-package eshell-vterm                 ; vterm > term-mode  One more reason to switch to Linux 😀
-  :commands eshell-vterm-mode
-  :hook (eshell-mode . eshell-vterm-mode)
-
-  :config
-  (eshell-vterm-mode)
-  (add-hook 'vterm-exit-functions (lambda (buf event)
-    (when (string-match-p "finished" event) (kill-buffer buf)))))
-
-
-(use-package vterm                        ; by far the best terminal for Vim
-  :commands vterm
-
-  :init
-  (gsk (kbd "M-T") 'vterm)
-
-  :config
-  (dk vterm-mode-map (kbd "M-e") (key-binding (kbd "M-e"))) ; cancel the vterm override
-  (dk vterm-mode-map (kbd "M-r") (key-binding (kbd "M-r"))) ; ""
-
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *"
-        vterm-shell "env NOFETCH=1 bash"
-        vterm-kill-buffer-on-exit t
-        vterm-max-scrollback 10000))
+(defun my/dired-RET ()
+  "Open files in the other window"
+  (interactive)
+  (let ((filename (dired-get-filename nil t)))
+    (if (and filename (file-directory-p filename))
+      (dired-find-file)
+      (dired-find-file-other-window))))
 
 
 (use-package casual                       ; Emacs has too many commands to remember
@@ -185,7 +126,7 @@
   ;; (add-hook 'context-menu-functions #'embark-context-menu 100)
 
   ;; My stuff:
-  (edk '(normal visual) 'global (kbd "<leader>.") #'embark-act)
+  (evil-define-key '(normal visual) 'global (kbd "<leader>.") #'embark-act)
 
   :config
 
@@ -236,10 +177,6 @@
   (winner-mode 1))
 
 
-(use-package origami                      ; text folding
-  :hook (yaml-mode . origami-mode))
-
-
 (use-package popper                       ; treat aux windows as pop-ups
   :bind (("C-`"   . popper-toggle)
          ("M-`"   . popper-cycle)
@@ -263,10 +200,14 @@
   :commands magit-project-status)
 
 
+;; I can't lazy load this guy because :bind-keymap does not work with
+;; evil's <leader>.  If I catch the 1st command, load the package, and
+;; install the prefix map, I would have to write some gnarly hacks to
+;; inject the prefix and the command.  Way too much work to save 40 ms!
 (use-package project
   :ensure nil                             ; built in
-  :init
-  (edk* '(normal visual) 'global (kbd "<leader>g") project-prefix-map)
+  :init                                   ;
+  (evil-define-key* '(normal visual) 'global (kbd "<leader>g") project-prefix-map)
   (dk project-prefix-map (kbd "v") #'magit-project-status))
 
 
@@ -281,6 +222,7 @@
   :commands (rg rgrep)
   :config
   (rg-enable-default-bindings))
+
 
 (use-package hydra    ; create commands that are sequenced by spamming sub keys
   :defer t)

@@ -4,6 +4,7 @@
 ;;; Make it purty
 ;;;
 
+(require 'evil)                             ; needed to fix the compiled version
 
 (use-package doom-themes)
 (load-theme 'doom-city-lights t)

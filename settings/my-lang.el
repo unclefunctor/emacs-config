@@ -4,6 +4,8 @@
 ;;; Syntax highlighting, LSPs, snippets, etc…
 ;;;
 
+(require 'evil)                             ; needed to fix the compiled version
+
 ;; Does not auto switch to the file's tree-sitter mode after
 ;; an compile/install, so you will need to do a M-x revert-buffer :(
 (use-package treesit-auto
@@ -22,7 +24,7 @@
   :mode ("\\.md\\'" . markdown-ts-mode)
   :hook (markdown-ts-mode . (lambda ()
     (setq-local markdown-command `("pandoc" "--standalone" ,(concat "--metadata=title:" (buffer-name))))
-    (edk '(normal visual) 'markdown-ts-mode-map (kbd "M-P") #'markdown-preview))))
+    (evil-define-key '(normal visual) 'markdown-ts-mode-map (kbd "M-P") #'markdown-preview))))
 
 
 (use-package yasnippet
@@ -40,7 +42,7 @@
   :after evil
   :bind ("M-p" . rainbow-delimiters-mode)
   :init
-  (edk '(normal visual) 'global (kbd "<M-p>") #'rainbow-delimiters-mode))
+  (evil-define-key '(normal visual) 'global (kbd "<M-p>") #'rainbow-delimiters-mode))
 
 
 ;; Tabs

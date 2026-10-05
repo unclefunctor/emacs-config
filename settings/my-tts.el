@@ -5,6 +5,8 @@
 ;;; Assumes the "kokoro" bash script is in the path
 ;;;
 
+(require 'evil)                             ; needed to fix the compiled version
+
 (defvar my/kokoro-used nil)                 ; don't stop the container if you never used it
 
 (defun my/kokoro ()
@@ -22,4 +24,5 @@
   (when my/kokoro-used (call-process "kokoro" nil nil nil "-s")))
 (add-hook 'kill-emacs-hook #'my/stop-kokoro)
 
-(edk '(normal visual) 'global (kbd "<leader>s") #'my/kokoro)
+(with-eval-after-load 'evil
+  (evil-define-key '(normal visual) 'global (kbd "<leader>s") #'my/kokoro)) ; edk is TBD

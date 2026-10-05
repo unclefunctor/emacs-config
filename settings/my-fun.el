@@ -4,6 +4,8 @@
 ;;; Misc fun stuff
 ;;;
 
+(require 'evil)                             ; needed to fix the compiled version
+
 (use-package speed-type
   :commands (speed-type-text speed-type-buffer speed-type-region)
   :init

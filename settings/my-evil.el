@@ -3,13 +3,16 @@
 ;;;
 ;;; Vim for the win.  Load FIRST because the rest of my libraries use it!
 ;;;
+;;; Note: I was using an 'edk' alias which worked well until I started compiling
+;;; my configs.  I wasted too much time getting the other native files to see it,
+;;; so I gave up and if you value your time, you should too 🙁
+;;;
+
+(setq evil-want-keybinding nil)           ; evil-collection needs this set before loading
 
 (use-package evil
   :init
-  (defalias 'edk  #'evil-define-key)      ; defers if the keymap is not loaded (adds a hook)
-  (defalias 'edk* #'evil-define-key*)     ; will NOT defer until keymap is loaded which prevents a double hook in :init sections
   (setq evil-want-integration t           ; using evil-collection
-        evil-want-keybinding nil          ; evil-collection does the keybindings
         evil-want-C-u-scroll t
         evil-want-C-i-jump nil            ; I prefer using C-S-o
         evil-move-beyond-eol t
@@ -81,8 +84,8 @@
 
   (use-package evil-easymotion
     :config
-    (edk '(normal visual) 'global (kbd "<leader>j") #'evilem-motion-find-char)
-    (edk '(normal visual) 'global (kbd "<leader>k") #'evilem-motion-find-char-backward))
+    (evil-define-key '(normal visual) 'global (kbd "<leader>j") #'evilem-motion-find-char)
+    (evil-define-key '(normal visual) 'global (kbd "<leader>k") #'evilem-motion-find-char-backward))
 
   (use-package evil-xkbswitch         ; switch to English when returning to normal mode
     :vc (:url "https://github.com/linktohack/evil-xkbswitch" :rev :newest)
@@ -119,7 +122,7 @@
   ;; should too.  yy and dd work with the whole line, so vv should
   ;; too. Note: I fixed Y behavior with an evil setting ⬆⬆⬆
   (dk evil-normal-state-map (kbd "v") (lambda ()
-    "Adds 'vv' as a motion"
+    "Adds `vv' as a motion"
     (interactive)
     (let ((evt (read-event)))
       (if (eq evt ?v)
@@ -127,7 +130,7 @@
         (setq unread-command-events (cons evt unread-command-events))
         (evil-visual-char)))))
   (dk evil-normal-state-map (kbd "V") (lambda ()
-    "Makes 'V' select to end of line"
+    "Makes `V' select to end of line"
     (interactive)
     (evil-visual-char)
     (evil-end-of-line)
@@ -135,7 +138,7 @@
 
   ;; Fix insert mode's C-v:
   (dk evil-insert-state-map (kbd "C-v") (lambda ()
-    "Add a unicode menu inside insert mode's C-v: 'C-v u'"
+    "Add a unicode menu inside insert mode's C-v: `C-v u'"
     (interactive)
     (let ((evt (read-event)))
       (if (eq evt ?u)
@@ -168,12 +171,12 @@
   (dk evil-visual-state-map (kbd "C-,") #'duplicate-dwim)
   (dk evil-insert-state-map (kbd "C-a") #'evil-insert-line)
   (dk evil-insert-state-map (kbd "C-e") #'evil-append-line)
-  (edk '(normal visual) 'global (kbd "<leader><return>") #'make-frame)
-  (edk '(normal visual) 'global (kbd "<leader><S-return>") #'delete-frame)
-  (edk '(normal visual) 'global (kbd "<leader>ww") #'toggle-truncate-lines)
-  (edk '(normal visual) 'global (kbd "<leader>ws") #'whitespace-mode)
-  (edk '(normal visual) 'global (kbd "<leader>rb") #'kill-current-buffer)
-  (edk '(normal insert visual) 'global (kbd "C-S-v") #'yank)
+  (evil-define-key '(normal visual) 'global (kbd "<leader><return>") #'make-frame)
+  (evil-define-key '(normal visual) 'global (kbd "<leader><S-return>") #'delete-frame)
+  (evil-define-key '(normal visual) 'global (kbd "<leader>ww") #'toggle-truncate-lines)
+  (evil-define-key '(normal visual) 'global (kbd "<leader>ws") #'whitespace-mode)
+  (evil-define-key '(normal visual) 'global (kbd "<leader>rb") #'kill-current-buffer)
+  (evil-define-key '(normal insert visual) 'global (kbd "C-S-v") #'yank)
   (gsk (kbd "C-V")      #'yank)                 ; C-y is fine, but C-S-v is burned into my neurons :(
   (gsk (kbd "<escape>") #'keyboard-escape-quit) ; works, but maybe 'keyboard-quit is a better fit?
   (gsk (kbd "C-M-u")    #'universal-argument)   ; C-u is overidden by evil-scroll-up
@@ -221,4 +224,13 @@
     (if (run-hook-with-args-until-failure 'kill-emacs-query-functions)
       (kill-emacs)
       (message "Quit aborted."))))
+
+  ;; The best folding system is already in treesitter
+  (add-to-list 'evil-fold-list
+               '((derived-mode . treesit-major-mode-p)
+                 :open-all  treesit-fold-open-all
+                 :close-all treesit-fold-close-all
+                 :open      treesit-fold-open
+                 :close     treesit-fold-close
+                 :toggle    treesit-fold-toggle))
 )

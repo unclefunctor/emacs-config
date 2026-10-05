@@ -3,13 +3,13 @@
 ;;; This file is big because I copy pasta'd the github
 ;;; default configs to make tweaking a little bit easier
 
+(require 'evil)                             ; needed to fix the compiled version
+
 (savehist-mode)
 (context-menu-mode)
 (setq enable-recursive-minibuffers    t
       read-extended-command-predicate #'command-completion-default-include-p
       minibuffer-prompt-properties    '(read-only t cursor-intangible t face minibuffer-prompt))
-
-
 
 (use-package consult                               ; Neovim telescope for the minibuffer
   ;; Replace bindings. Lazily loaded by `use-package'.
@@ -84,13 +84,13 @@
   ;; My stuff:
   (gsk (kbd "M-r") #'consult-buffer)                      ; IntelliJ burnt this key into my neurons
 
-  (edk '(normal visual) 'global (kbd "<leader>p") #'(lambda () ; mimic IntelliJ's C-S-V, extremely useful :)
+  (evil-define-key '(normal visual) 'global (kbd "<leader>p") #'(lambda () ; mimic IntelliJ's C-S-V, extremely useful :)
     (interactive)
     (forward-char)
     (unwind-protect       ; Consult signals a quit when the user aborts :(
       (call-interactively #'consult-yank-from-kill-ring)
       (backward-char))))
-  (edk '(normal visual) 'global (kbd "<leader>P") #'(lambda () ; match Vim's 'P' behavior
+  (evil-define-key '(normal visual) 'global (kbd "<leader>P") #'(lambda () ; match Vim's 'P' behavior
     (interactive)
     (call-interactively #'consult-yank-from-kill-ring)
     (backward-char)))

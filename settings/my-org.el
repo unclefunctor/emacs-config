@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: nil -*-
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                             ; needed for native compilation
 
 (use-package org
   :pin  gnu                       ; use the latest elpa package instead of the built in one

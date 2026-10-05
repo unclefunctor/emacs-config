@@ -4,7 +4,7 @@
 ;;; Misc UI conveniences
 ;;;
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                             ; needed for native compilation
 
 (setq-default calc-algebraic-mode t)
 (setq history-length 40
@@ -57,11 +57,6 @@
   (evil-define-key 'normal dired-mode-map (kbd "<return>") 'my/dired-RET)       ; poor man's treemacs
   (evil-define-key 'normal dired-mode-map (kbd "S-<return>") 'dired-find-file)
 
-  (use-package all-the-icons-dired
-    :hook (dired-mode . all-the-icons-dired-mode)
-    :config
-    (setq all-the-icons-dired-monochrome nil))
-
   (use-package dired-subtree
     :bind (:map dired-mode-map
                 ("<tab>" . dired-subtree-toggle)
@@ -76,6 +71,11 @@
     (if (and filename (file-directory-p filename))
       (dired-find-file)
       (dired-find-file-other-window))))
+
+
+(use-package nerd-icons-multimodal
+  :vc (:url "https://github.com/abougouffa/nerd-icons-multimodal" :rev :newest)
+  :hook ((archive-mode tar-mode dired-mode) . nerd-icons-multimodal-mode))
 
 
 (use-package casual                       ; Emacs has too many commands to remember
@@ -206,6 +206,9 @@
 ;; inject the prefix and the command.  Way too much work to save 40 ms!
 (use-package project
   :ensure nil                             ; built in
+  :custom
+  (project-list-file "~/.cache/emacs/projects.eld")
+
   :init                                   ;
   (evil-define-key* '(normal visual) 'global (kbd "<leader>g") project-prefix-map)
   (dk project-prefix-map (kbd "v") #'magit-project-status))

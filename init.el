@@ -12,7 +12,7 @@
 
 ;; Moar Moar Moar
 (require 'package)
-(setq package-user-dir (file-truename (expand-file-name "~/.local/share/emacs/repos/"))
+(setq package-user-dir (file-truename "~/.local/share/emacs/repos/")
       package-archives '(("gnu"    . "https://elpa.gnu.org/packages/")
                          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                          ("melpa"  . "https://melpa.org/packages/")))
@@ -20,7 +20,6 @@
 (unless package-archive-contents
   (package-refresh-contents))
 (unless (package-installed-p 'use-package)
-  (defvar my/first-run t)
   (package-install 'use-package))
 ;; (byte-recompile-directory package-user-dir nil 'force) ; eval to recompile the packages
 
@@ -37,11 +36,11 @@
 
 
 ;; Auto compile setting files ignoring sym link mismatches
-;;   This was an utter PITA to get working, but evil mode
+;; This was an utter PITA to get working, but evil mode
 ;; uses a lot of hooks, so hopefully Emacs will be snappier 🤔
 (defun my/auto-config-compile ()
   "Automatically byte compiles my settings files"
-  (let ((true-name (file-truename (expand-file-name buffer-file-name)))
+  (let ((true-name       (file-truename buffer-file-name))
         (true-config-dir (file-truename my/config-dir)))
     (when (and (string-prefix-p true-config-dir true-name)
                (string-match-p "\\.el$" true-name))
@@ -49,9 +48,6 @@
 (add-hook 'after-save-hook #'my/auto-config-compile)
 
 
-;; I use this everywhere and give it 5 ⭐s because it does everything
-;; well and CONFINES each package's tweaks to a single s-expression
-;; which makes it a lot easier to debug my endless Emacs hacks 🙃
 (require 'use-package)
 (setq use-package-always-ensure t)      ; well duh...
 (setq use-package-compute-statistics t)

@@ -3,7 +3,7 @@
 ;;; This file is big because I copy pasta'd the github
 ;;; default configs to make tweaking a little bit easier
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                             ; needed for native compilation
 
 (savehist-mode)
 (context-menu-mode)

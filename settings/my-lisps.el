@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: nil -*-
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                             ; needed for native compilation
 
 (use-package racket-mode
   :mode ("\\.rkt\\'" . racket-mode)

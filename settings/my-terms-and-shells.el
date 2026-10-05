@@ -4,7 +4,7 @@
 ;;; I gave this its own file because I will be constantly adding new functions to eshell
 ;;;
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                             ; needed for native compilation
 
 (use-package vterm                        ; by far the best terminal for Vim
   :commands vterm

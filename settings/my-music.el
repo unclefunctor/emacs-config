@@ -9,7 +9,7 @@
 ;;; Uses 'mpv' for audio playback, so it must be installed.
 ;;;
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                             ; needed for native compilation
 
 (defvar my/id nil)
 (defun my/emms-notify ()
@@ -17,8 +17,8 @@
   (when-let* ((track (emms-playlist-current-selected-track)))
     (message (emms-track-description track))
     (setq my/id (notifications-notify
-                  :title       my/playlist
-                  :body        (emms-track-description track)
+                  :title       (emms-track-description track)
+                  :body        my/playlist
                   :replaces-id my/id))))
 
 (defun my/emms-pause ()
@@ -56,6 +56,15 @@
     (emms-shuffle)
     (emms-start)))
 
+(defun my/previous-replay ()
+  "Jump to previous track if the pos < 5 secs, otherwise replay it"
+  (interactive)
+  (emms-player-mpv-cmd '(get_property time-pos) (lambda (pos err)
+    (if (or err (< pos 5.0))
+      (emms-previous)
+      (emms-player-seek-to 0)
+      (my/emms-notify)))))
+
 (defun my/browse-music-library ()
   "Open the Emms browser"
   (interactive)
@@ -79,20 +88,21 @@
   (require 'emms-mpris)
   (require 'notifications)
   (require 'emms-info-tinytag)
-  (add-to-list 'emms-info-functions #'emms-info-tinytag)
 
+  (add-to-list 'emms-info-functions #'emms-info-tinytag)
   (emms-mpris-enable)
   (emms-all)
 
   (setq emms-player-list             '(emms-player-mpv)
-        emms-volume-change-function #'emms-volume-mpv-change)
+        emms-volume-change-function  #'emms-volume-mpv-change
+        emms-repeat-playlist         t)
 
   (gsk (kbd "<XF86AudioStop>") #'emms-stop)
   (gsk (kbd "<XF86AudioPlay>") #'emms-pause)
   (gsk (kbd "s-n")             #'emms-next)
   (gsk (kbd "<XF86AudioNext>") #'emms-next)
-  (gsk (kbd "s-N")             #'emms-previous)      ; "s-S-n" does not work either
-  (gsk (kbd "<XF86AudioPrev>") #'emms-previous)
+  (gsk (kbd "s-N")             #'my/previous-replay) ; "s-S-n" does not work either
+  (gsk (kbd "<XF86AudioPrev>") #'my/previous-replay)
   (gsk (kbd "s-s")             #'emms-shuffle)
   (gsk (kbd "s-C-v")           #'emms-volume-raise)  ; in my DE, s-v raises the master PC volume
   (gsk (kbd "s-C-S-v")         #'emms-volume-lower)) ;    ""     s-V lowers the master PC volume

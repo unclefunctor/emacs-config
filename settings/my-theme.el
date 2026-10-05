@@ -4,14 +4,18 @@
 ;;; Make it purty
 ;;;
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                             ; needed for native compilation
 
-(use-package doom-themes)
-(load-theme 'doom-city-lights t)
-(custom-set-faces '(default ((t (:background "#011627")))))
+(use-package doom-themes
+  :init
+  (load-theme 'doom-city-lights t)
+  (custom-set-faces '(default ((t (:background "#011627"))))))
 
 
 (use-package doom-modeline
+  :custom
+  (doom-modeline-height 27)
+
   :init
   (doom-modeline-mode 1)
 
@@ -21,15 +25,7 @@
     :height 160)
   (set-face-attribute 'mode-line-inactive nil
     :family "Inconsolata Nerd Font Mono"
-    :height 160)
-
-  :custom
-  (doom-modeline-height 27))
-
-
-(use-package all-the-icons
-  :init
-  (when (boundp 'my/first-run) (all-the-icons-install-fonts)))
+    :height 160))
 
 
 (setq

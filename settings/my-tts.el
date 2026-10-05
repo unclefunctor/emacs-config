@@ -5,7 +5,7 @@
 ;;; Assumes the "kokoro" bash script is in the path
 ;;;
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                             ; needed for native compilation
 
 (defvar my/kokoro-used nil)                 ; don't stop the container if you never used it
 

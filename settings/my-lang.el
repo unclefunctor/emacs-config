@@ -4,7 +4,19 @@
 ;;; Syntax highlighting, LSPs, snippets, etc…
 ;;;
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                                     ; needed for native compilation
+
+;; I don't like LSP's but they are helpful when dealing with mega OOP frameworks
+(use-package eglot
+  :ensure nil                                       ; built in for 29+
+  :hook ((java-ts-mode        . eglot-ensure)
+          (eglot-managed-mode . flymake-mode-off))  ; dynamic linting was a TERRIBLE idea
+
+  :init
+  (let ((jdtls (file-truename "~/.local/share/emacs/jdtls/bin")))
+    (add-to-list 'exec-path jdtls)
+    (setenv "PATH" (concat jdtls path-separator (getenv "PATH")))))
+
 
 ;; Does not auto switch to the file's tree-sitter mode after
 ;; an compile/install, so you will need to do a M-x revert-buffer :(
@@ -16,7 +28,7 @@
   (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
 
 
-(use-package markdown-mode                  ; old, markdown-ts-mode is way better, but I want its preview function
+(use-package markdown-mode                  ; markdown-ts-mode is better, but I want to use its preview
   :commands markdown-preview)
 
 (use-package markdown-ts-mode

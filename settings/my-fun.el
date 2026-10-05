@@ -4,7 +4,7 @@
 ;;; Misc fun stuff
 ;;;
 
-(require 'evil)                             ; needed to fix the compiled version
+(require 'evil)                             ; needed for native compilation
 
 (use-package speed-type
   :commands (speed-type-text speed-type-buffer speed-type-region)

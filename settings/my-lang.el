@@ -10,7 +10,7 @@
 (use-package eglot
   :ensure nil                                       ; built in for 29+
   :hook ((java-ts-mode        . eglot-ensure)
-          (eglot-managed-mode . flymake-mode-off))  ; dynamic linting was a TERRIBLE idea
+          (eglot-managed-mode . flymake-mode))      ; dynamic linting was a TERRIBLE idea
 
   :init
   (let ((jdtls (file-truename "~/.local/share/emacs/jdtls/bin")))
@@ -28,6 +28,15 @@
   (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
 
 
+(use-package font-lock                      ; JetBrains spoiled me
+  :ensure nil
+  :init
+  (custom-set-faces
+   '(font-lock-comment-face ((t (:slant italic))))
+   '(font-lock-doc-face ((t (:slant italic))))
+   '(font-lock-comment-delimiter-face ((t (:slant italic))))))
+
+
 (use-package markdown-mode                  ; markdown-ts-mode is better, but I want to use its preview
   :commands markdown-preview)
 
@@ -39,7 +48,7 @@
     (evil-define-key '(normal visual) 'markdown-ts-mode-map (kbd "M-P") #'markdown-preview))))
 
 
-(use-package yasnippet
+(use-package yasnippet                      ; I really need to force myself to use this LoL
   :defer t
   :config
   (run-with-idle-timer 2 nil (lambda ()          ; delay the scan of ⬇⬇⬇'s massive directory

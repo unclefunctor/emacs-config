@@ -28,7 +28,7 @@
   (recentf-mode)
   (add-to-list 'recentf-exclude "emacs\-31")
   (add-to-list 'recentf-exclude "/usr/share/")
-  (add-to-list 'recentf-exclude "/emacs/elpa/")
+  (add-to-list 'recentf-exclude "/emacs/repos/")
   (add-to-list 'recentf-exclude "emacs/custom\.el")
   (add-hook 'emacs-startup-hook (lambda ()
     ;; (message "")                          ; start clean, yes I have OCD, what's your point?

@@ -1,0 +1,46 @@
+#!/bin/bash
+# Keep a single instance of Emacs
+#
+# Notes:
+# 1 - Uses Xwin tools so I am not sure it is GTG for Wayland
+# 2 - ASSumes your init.el called (server-start)
+
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+   cat << EOF
+Usage: $(basename "$0") [OPTION] [ARGUMENTS...]
+
+Control Emacs while keeping a single GUI instance.
+
+Options:
+  -e          Execute a command without raising the GUI.
+  -E          Raise the GUI and then execute a command.
+  -h, --help  Display this help message.
+
+Examples:
+  $(basename "$0") -e "(emms-volume-lower)"
+  $(basename "$0") -E "(switch-to-buffer \"*scratch*\")"
+EOF
+   exit 0
+fi
+
+
+if [ -n "$(pidof emacs)" ]; then
+   if [[ "$1" != "-e" ]]; then            # raise the window
+      while read -r line; do
+      wClass=$(echo "$line" | cut -d ' ' -f 3)
+      if [[ "$wClass" =~ "emacs.Emacs" ]]; then
+         wId=$(echo "$line" | cut -d ' ' -f 1)
+         xdotool windowraise $wId
+         wmctrl -i -r $wId -b remove,shaded
+         exit 0
+      fi
+      done < <(wmctrl -l -x | tr -s ' ')  # wmctrl pads spaces, which breaks cut ^^^
+   fi
+
+   [ "$1" = "-E" ] && set -- "-e" "${@:2}"
+   nohup emacsclient -n -q "$@" >& /tmp/nohup.out & disown
+else
+   [[ "$1" = "-E" || "$1" = "-e" ]] && set -- "--eval" "${@:2}"
+   nohup emacs "$@" >& /tmp/nohup.out & disown
+fi

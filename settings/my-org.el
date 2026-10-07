@@ -35,7 +35,6 @@
   :config
   (evil-define-key '(normal visual) 'global (kbd "gx") #'org-open-at-point-global))
 
-
 (use-package org-ibullets
   :vc (:url "https://github.com/jamescherti/org-ibullets.el" :rev :newest)
   :hook (org-mode . org-ibullets-mode)

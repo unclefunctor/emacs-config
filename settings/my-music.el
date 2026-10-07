@@ -93,9 +93,10 @@
   (emms-mpris-enable)
   (emms-all)
 
-  (setq emms-player-list             '(emms-player-mpv)
-        emms-volume-change-function  #'emms-volume-mpv-change
-        emms-repeat-playlist         t)
+  (setq emms-volume-change-function  #'emms-volume-mpv-change
+        emms-player-list             '(emms-player-mpv)
+        emms-repeat-playlist         t
+        emms-volume-change-amount    3)
 
   (gsk (kbd "<XF86AudioStop>") #'emms-stop)
   (gsk (kbd "<XF86AudioPlay>") #'emms-pause)

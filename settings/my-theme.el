@@ -14,18 +14,21 @@
 
 (use-package doom-modeline
   :custom
-  (doom-modeline-height 27)
+  (doom-modeline-height 29)
 
   :init
   (doom-modeline-mode 1)
 
   :config
   (set-face-attribute 'mode-line nil
-    :family "Inconsolata Nerd Font Mono"
-    :height 160)
+                      :family "InconsolataLGCNerdFontPropo"
+                      :weight 'regular
+                      :height 140)
   (set-face-attribute 'mode-line-inactive nil
-    :family "Inconsolata Nerd Font Mono"
-    :height 160))
+                      :weight 'regular
+                      :family "InconsolataLGCNerdFontPropo"
+                      :weight 'regular
+                      :height 140))
 
 
 (setq
@@ -52,16 +55,16 @@
 
 ;; Fonts
 (set-face-attribute 'default nil
-                    ;; :font "Monofoki 14"
-                    :font "Inconsolata Nerd Font Mono 16"
-                    :weight 'regular)
+                    ;; :font "Monofoki"
+                    ;; :font "Iosevka Nerd Font Mono"
+                    ;; :font "InconsolataLGCNerdFont Mono"
+                    :font "InconsolataLGCNerdFont"
+                    :weight 'regular
+                    :height 140)
 (set-face-attribute 'variable-pitch nil
-                    :font "Source Sans Pro 16"
-                    :weight 'regular)
-(set-face-attribute 'fixed-pitch nil
-                    ;; :font "Monofoki 14"
-                    :font "Inconsolata Nerd Font Mono 16"
-                    :weight 'regular)
+                    :font "Source Sans Pro"
+                    :weight 'regular
+                    :height 160)
 
 
 ;; BG alpha tweaking

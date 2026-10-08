@@ -11,7 +11,6 @@
   (load-theme 'doom-city-lights t)
   (custom-set-faces '(default ((t (:background "#011627"))))))
 
-
 (use-package doom-modeline
   :custom
   (doom-modeline-height 29)
@@ -66,6 +65,9 @@
                     :weight 'regular
                     :height 160)
 
+
+(add-to-list 'auto-mode-alist '("/[^.]+\\'" . text-mode)) ; default to text
+(add-hook 'text-mode-hook #'visual-line-mode)             ; don't split words in text files
 
 ;; BG alpha tweaking
 (gsk (kbd "s-E") (lambda ()

@@ -1,15 +1,18 @@
 ;; -*- lexical-binding: nil -*-
 
-(require 'evil)                             ; needed for native compilation
+(require 'evil)            ; needed for native compilation
 
 (use-package org
-  :pin  gnu                       ; use the latest elpa package instead of the built in one
+  :pin  gnu                ; use the latest instead of the built in one
   :mode ("\\.org\\'" . org-mode)
   :hook (org-mode . (lambda ()
     "Make Org Mode purty"
+    (setq-local org-list-indent-offset 4
+                line-spacing 0.05)
+
+    (visual-wrap-prefix-mode)
     (variable-pitch-mode)
     (visual-line-mode)
-    (org-indent-mode)
 
     (set-face-attribute 'org-level-1 nil :height 1.40 :weight 'bold)
     (set-face-attribute 'org-level-2 nil :height 1.25 :weight 'bold)
@@ -25,7 +28,10 @@
                     org-special-keyword
                     org-meta-line
                     org-checkbox))
-      (set-face-attribute face nil :inherit 'fixed-pitch))))
+      (set-face-attribute face nil :inherit 'fixed-pitch))
+
+    ;; Shrink blank lines to use as item separators, but conflicts with org-indent-mode 😞
+    (font-lock-add-keywords nil '(("^[ \t]*\n" 0 '(:height 60) t)) 'append)))
 
   :custom
   (org-log-done 'note)
@@ -51,4 +57,3 @@
     (setq visual-fill-column-width 100
           visual-fill-column-center-text t)
     (visual-fill-column-mode 1))))
-;

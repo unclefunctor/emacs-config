@@ -44,7 +44,8 @@
         (true-config-dir (file-truename my/config-dir)))
     (when (and (string-prefix-p true-config-dir true-name)
                (string-match-p "\\.el$" true-name))
-      (byte-compile-file true-name))))
+      (byte-compile-file true-name)
+      (native-compile true-name)))) ; auto native comp is bugged and randomly running old binaries makes coding HELL
 (add-hook 'after-save-hook #'my/auto-config-compile)
 
 

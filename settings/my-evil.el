@@ -166,17 +166,24 @@
   ;; Misc tweaks
   (dk evil-motion-state-map (kbd "j") #'evil-next-visual-line)
   (dk evil-motion-state-map (kbd "k") #'evil-previous-visual-line)
-  (dk evil-motion-state-map (kbd "M-*") #'evil-ex-nohighlight)
+  (dk evil-motion-state-map (kbd "M-L") #'evil-ex-nohighlight)
   (dk evil-normal-state-map (kbd "C-,") #'duplicate-line)
   (dk evil-visual-state-map (kbd "C-,") #'duplicate-dwim)
   (dk evil-insert-state-map (kbd "C-a") #'evil-insert-line)
   (dk evil-insert-state-map (kbd "C-e") #'evil-append-line)
-  (evil-define-key '(normal visual) 'global (kbd "<leader><return>") #'make-frame)
+  (evil-define-key '(normal visual) 'global (kbd "<leader><return>") #'(lambda ()
+    "Move the window to a new frame"
+    (interactive)
+    (let ((win (selected-window)))
+      (make-frame)
+      (delete-window win))))
   (evil-define-key '(normal visual) 'global (kbd "<leader><S-return>") #'delete-frame)
   (evil-define-key '(normal visual) 'global (kbd "<leader>ww") #'toggle-truncate-lines)
   (evil-define-key '(normal visual) 'global (kbd "<leader>ws") #'whitespace-mode)
   (evil-define-key '(normal visual) 'global (kbd "<leader>rb") #'kill-current-buffer)
   (evil-define-key '(normal insert visual) 'global (kbd "C-S-v") #'yank)
+  (dk evil-window-map (kbd "C-f") 'other-frame) ; C-w f to switch to the other frame
+  (dk evil-window-map "f" 'other-frame)
   (gsk (kbd "C-V")      #'yank)                 ; C-y is fine, but C-S-v is burned into my neurons :(
   (gsk (kbd "<escape>") #'keyboard-escape-quit) ; works, but maybe 'keyboard-quit is a better fit?
   (gsk (kbd "C-M-u")    #'universal-argument)   ; C-u is overidden by evil-scroll-up
@@ -223,14 +230,4 @@
     (save-some-buffers nil t)
     (if (run-hook-with-args-until-failure 'kill-emacs-query-functions)
       (kill-emacs)
-      (message "Quit aborted."))))
-
-  ;; The best folding system is already in treesitter
-  (add-to-list 'evil-fold-list
-               '((derived-mode . treesit-major-mode-p)
-                 :open-all  treesit-fold-open-all
-                 :close-all treesit-fold-close-all
-                 :open      treesit-fold-open
-                 :close     treesit-fold-close
-                 :toggle    treesit-fold-toggle))
-)
+      (message "Quit aborted.")))))

@@ -38,6 +38,9 @@
   :ensure nil                             ; built in
   :commands eshell
 
+  :custom
+  (eshell-directory-name "~/.config/emacs/eshell/")
+
   :init
   (gsk (kbd "M-t") 'eshell)
 
@@ -90,4 +93,30 @@
                  (cl-loop for b in (buffer-list)
                    thereis (and (string-match-p buf-or-regexp (buffer-name b)) b)))))
       (when buf
-        (with-current-buffer buf (buffer-substring-no-properties (point-min) (point-max)))))))
+        (with-current-buffer buf (buffer-substring-no-properties (point-min) (point-max))))))
+
+  ;; Ripped from https://xenodium.com/rinku-cli-link-previews
+  ;; Allows 'cat' to preview image files
+  (defun adviced:eshell/cat (orig-fun &rest args)
+    "Like `eshell/cat' but with image support."
+    (if (seq-every-p (lambda (arg)
+                       (and (stringp arg)
+                            (file-exists-p arg)
+                            (image-supported-file-p arg)))
+                     args)
+        (with-temp-buffer
+          (insert "\n")
+          (dolist (path args)
+            (let ((spec (create-image
+                         (expand-file-name path)
+                         (image-type-from-file-name path)
+                         nil :max-width 350
+                         :conversion (lambda (data) data))))
+              (image-flush spec)
+              (insert-image spec))
+            (insert "\n"))
+          (insert "\n")
+          (buffer-string))
+      (apply orig-fun args)))
+
+  (advice-add #'eshell/cat :around #'adviced:eshell/cat))

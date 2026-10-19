@@ -26,8 +26,9 @@
   (unless emms-player-paused-p (my/emms-notify)))
 
 (defvar my/playlist nil)
+
 (defun my/select-playlist ()
-  (require 'emms) ; I need this because :bind sometimes fires before everything is loaded
+  (require 'emms)
   (let ((path (read-file-name "Playlist file: "
                 (concat emms-source-file-default-directory "Playlists/")
                 nil t)))
@@ -36,25 +37,37 @@
     (emms-playlist-current-clear)
     path))
 
+(defun my/play-after-load ()
+  (remove-hook 'emms-info-init-done-hook #'my/play-after-load)
+  (emms-start))
+
+(defun my/shuffle-and-play-after-load ()
+  (remove-hook 'emms-info-init-done-hook #'my/shuffle-and-play-after-load)
+  (emms-shuffle)
+  (emms-start))
+
 (defun my/play-pause ()
   "Play/Pause if a track is loaded, otherwise select and start a playlist"
   (interactive)
   (if (fboundp 'emms-playlist-current-selected-track)
     (emms-pause)
-    (emms-play-playlist (my/select-playlist))))
+    (let ((playlist (my/select-playlist)))
+      (add-hook 'emms-info-init-done-hook #'my/play-after-load)
+      (emms-add-playlist playlist))))
 
 (defun my/start-playlist ()
   "Select and start a playlist"
   (interactive)
-  (emms-play-playlist (my/select-playlist)))
+  (let ((playlist (my/select-playlist)))
+    (add-hook 'emms-info-init-done-hook #'my/play-after-load)
+    (emms-add-playlist playlist)))
 
 (defun my/start-shuffled-playlist ()
   "Select and start a shuffled playlist"
   (interactive)
   (let ((playlist (my/select-playlist)))
-    (emms-add-playlist playlist)
-    (emms-shuffle)
-    (emms-start)))
+    (add-hook 'emms-info-init-done-hook #'my/shuffle-and-play-after-load)
+    (emms-add-playlist playlist)))
 
 (defun my/previous-replay ()
   "Jump to previous track if the pos < 5 secs, otherwise replay it"
@@ -68,14 +81,26 @@
 (defun my/browse-music-library ()
   "Open the Emms browser"
   (interactive)
+  (require 'emms)
   (setq my/playlist "Music Library")
   (emms-browser))
 
+(defun my/play-music-library ()
+  "Make a shuffled playlist from your library and start playing when done";
+  (interactive)
+  (require 'emms)
+  (emms-stop)
+  (emms-playlist-current-clear)
+  (setq my/playlist "Music Library")
+  (add-hook 'emms-info-init-done-hook #'my/shuffle-and-play-after-load)
+  (emms-add-directory-tree emms-source-file-default-directory))
+
 (use-package emms
-  :bind (("s-SPC"   . my/play-pause)
-         ("s-S-SPC" . my/start-playlist)
-         ("s-C-SPC" . my/browse-music-library)
-         ("s-S"     . my/start-shuffled-playlist))  ; WTF "s-S-s" does not work!
+  :bind (("s-SPC"     . my/play-pause)
+         ("s-S-SPC"   . my/start-playlist)
+         ("s-C-SPC"   . my/play-music-library)
+         ("s-C-S-SPC" . my/browse-music-library)
+         ("s-R"       . my/start-shuffled-playlist))  ; WTF "s-S-s" does not work!
   :hook ((emms-player-started . my/emms-notify)
          (emms-player-paused  . my/emms-pause))
 
@@ -104,6 +129,6 @@
   (gsk (kbd "<XF86AudioNext>") #'emms-next)
   (gsk (kbd "s-N")             #'my/previous-replay) ; "s-S-n" does not work either
   (gsk (kbd "<XF86AudioPrev>") #'my/previous-replay)
-  (gsk (kbd "s-s")             #'emms-shuffle)
+  (gsk (kbd "s-r")             #'emms-shuffle)
   (gsk (kbd "s-C-v")           #'emms-volume-raise)  ; in my DE, s-v raises the master PC volume
   (gsk (kbd "s-C-S-v")         #'emms-volume-lower)) ;    ""     s-V lowers the master PC volume

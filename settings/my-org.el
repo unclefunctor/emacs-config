@@ -41,12 +41,13 @@
   :config
   (evil-define-key '(normal visual) 'global (kbd "gx") #'org-open-at-point-global))
 
-(use-package org-ibullets
-  :vc (:url "https://github.com/jamescherti/org-ibullets.el" :rev :newest)
-  :hook (org-mode . org-ibullets-mode)
-
+(use-package org-superstar
+  :defer t
+  :hook (org-mode . org-superstar-mode)
   :custom
-  (org-ibullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+  (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
+  (org-superstar-item-bullet-alist '((?* . ?•) (?+ . ?◦) (?- . ?╸)))
+  (org-hide-leading-stars t))
 
 (use-package org-tempo     ; [[info:org#Structure Templates][org#Structure Templates]]
   :ensure nil              ; built into org
@@ -57,3 +58,7 @@
     (setq visual-fill-column-width 100
           visual-fill-column-center-text t)
     (visual-fill-column-mode 1))))
+
+;; Fix a rare emacs bug that happens when it is launched with
+;; an --eval elisp command and that command was aboorted...
+(add-hook 'kill-emacs-hook (lambda () (require 'org-clock nil t)))

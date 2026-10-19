@@ -2,6 +2,19 @@
 
 (require 'evil)                             ; needed for native compilation
 
+(add-to-list 'auto-mode-alist '("\\.sps\\'" . scheme-mode)) ; chez-scheme file
+
+;; Add folding to the lispys
+(add-hook 'emacs-lisp-mode-hook #'hs-minor-mode)
+(add-hook 'scheme-mode-hook #'hs-minor-mode)
+(add-to-list 'evil-fold-list
+             '((hs-minor-mode)
+               :open-all  hs-show-all
+               :close-all hs-hide-all
+               :open      hs-show-block
+               :close     hs-hide-block
+               :toggle    hs-toggle-hiding))
+
 (use-package racket-mode
   :mode ("\\.rkt\\'" . racket-mode)
   :hook (
@@ -51,7 +64,7 @@
 ;; Least painful parens package, I tried the paredit flavors
 ;; and what little benefit I got was overridden by rigid
 ;; formatting and random s-expression corruptions.  This guy
-;; is old, but simple enough to fork and tweak:
+;; is old, but was simple enough to fork and tweak:
 (use-package evil-lisp-state
   :vc (:url "https://github.com/unclefunctor/evil-lisp-state" :rev :newest)
   :after evil

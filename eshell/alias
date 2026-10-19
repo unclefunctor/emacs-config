@@ -1,0 +1,26 @@
+alias cp cp -i $@*
+alias df df -h $@*
+alias diff diff --color $@*
+alias egrep egrep --color auto $@*
+alias ffmpeg ffmpeg -hide_banner $@*
+alias ffprobe ffprobe -hide_banner $@*
+alias fgrep fgrep --color auto $@*
+alias git-clone-tiny git clone --depth 1 --filter blob:none --recurse-submodules --shallow-submodules $@*
+alias grep grep --color auto $@*
+alias igrep grep -i --color auto $@*
+alias info info --vi-keys $@*
+alias irg rg -i $@*
+alias l. ls -1d .* $*
+alias la ls -al $@*
+alias ll ls -l $@*
+alias ln ln -i $@*
+alias mkdir mkdir -pv $@*
+alias mv mv -i $@*
+alias resync stc rescan all $@*
+alias rm rm -i $@*
+alias stc stc -homedir "~/.local/state/syncthing/" $@*
+alias tree tree -C $@*
+alias xcat xargs bat $@*
+alias xclip xclip -selection clipboard $@*
+alias xla xargs ls -alF $@*
+alias xr sudo xbps-remove $@*

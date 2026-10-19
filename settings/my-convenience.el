@@ -170,7 +170,15 @@
   (setq which-key-popup-type 'side-window
         which-key-side-window-location 'bottom))
 
+(use-package eww
+  :ensure nil
+  :defer t                                ; need this for some reason
+  :hook
+  (eww-mode . (lambda ()                       ; let my leader key through
+    (evil-define-key 'normal eww-mode-map (kbd "SPC") nil))))
 
+
+;; TODO figure out how to use it
 (use-package winner                       ; save and load window positions, ...
   :ensure nil                             ; built in
   :init

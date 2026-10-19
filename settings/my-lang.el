@@ -27,6 +27,24 @@
   (treesit-auto-add-to-auto-mode-alist 'all)
   (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
 
+(use-package treesit-fold                   ; treesit has the best fold support
+  :defer t)
+
+(dolist (hook '(c-ts-mode-hook              ; treesit has a different mode name for each filetype
+                c++-ts-mode-hook
+                java-ts-mode-hook
+                python-ts-mode-hook))
+  (add-hook hook (lambda ()
+    (require 'treesit-fold)                 ; lazy load when it is actually needed
+    (treesit-fold-mode 1)
+
+    (setq-local indent-tabs-mode nil)
+    (setq-local tab-width 3)
+
+    ;; Construct "major-mode"-indent-offset variable name and then set it to 3
+    (let ((ts-off (intern (concat (symbol-name major-mode) "-indent-offset"))))
+      (when (boundp ts-off) (set (make-local-variable ts-off) 3))))))
+
 
 (use-package font-lock                      ; JetBrains spoiled me
   :ensure nil
@@ -72,14 +90,3 @@
 (setq-default c-basic-offset 3)             ; in case tree-sitter is not working
 (setq-default sh-basic-offset 3)
 (setq-default standard-indent 3)
-
-(dolist (hook '(c-ts-mode-hook
-                c++-ts-mode-hook
-                java-ts-mode-hook
-                python-ts-mode-hook))
-  (add-hook hook (lambda ()                      ; override tree-sitter's overrides!
-    (setq-local indent-tabs-mode nil)
-    (setq-local tab-width 3)
-    ;; construct "major-mode"-indent-offset vairable name and then set it to 3
-    (let ((ts-off (intern (concat (symbol-name major-mode) "-indent-offset"))))
-      (when (boundp ts-off) (set (make-local-variable ts-off) 3))))))

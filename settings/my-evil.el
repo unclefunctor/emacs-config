@@ -204,6 +204,8 @@
       ((and (boundp 'completion-in-region-mode) ; let Corfu do its thing
          completion-in-region-mode)
         (completion-at-point))
+      ((derived-mode-p 'org-mode)               ; Org mode template expansion
+        (org-cycle))
       ((<= (current-column)                     ; indent when in the indention region
          (save-excursion
            (back-to-indentation)

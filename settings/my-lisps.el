@@ -17,6 +17,7 @@
 
 (use-package racket-mode
   :mode ("\\.rkt\\'" . racket-mode)
+  :mode ("\\.rhm\\'" . racket-hash-lang-mode)
   :hook (
   (racket-mode . racket-xp-mode)
   (racket-repl-mode . (lambda ()

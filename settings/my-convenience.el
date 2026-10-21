@@ -31,7 +31,6 @@
   (add-to-list 'recentf-exclude "/emacs/repos/")
   (add-to-list 'recentf-exclude "emacs/custom\.el")
   (add-hook 'emacs-startup-hook (lambda ()
-    ;; (message "")                          ; start clean, yes I have OCD, what's your point?
     (message "%d packages in %s" (length package-activated-list) (emacs-init-time))
     (when (and recentf-list (null (cdr command-line-args)))
       (run-with-idle-timer 0.1 nil (lambda ()      ; this hook fires too soon, so wait. Which

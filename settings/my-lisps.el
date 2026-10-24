@@ -46,6 +46,7 @@
 
   :config
   (setq geiser-active-implementations '(chez))
+
   (evil-define-key '(normal visual) geiser-mode-map (kbd "C-q") #'geiser-doc-symbol-at-point)
   (evil-define-key '(normal visual) geiser-mode-map (kbd "C-j") #'(lambda ()
     "My Geiser eval and print"
@@ -60,6 +61,20 @@
   (setq geiser-chez-binary "/usr/bin/chez-scheme")
   (use-package geiser-chez
     :after geiser))
+
+
+(defun rash-shell ()
+  "Run racket/rash in vterm"
+  (interactive)
+  (require 'vterm)
+  (let* ((buffer-name "*rash*")
+         (vterm-buffer (get-buffer buffer-name)))
+    (if (buffer-live-p vterm-buffer)
+      (switch-to-buffer vterm-buffer)
+      (let ((vterm-shell "racket -l rash/repl"))
+        (vterm buffer-name)))))
+
+(gsk (kbd "M-C-t") 'rash-shell)
 
 
 ;; Least painful parens package, I tried the paredit flavors

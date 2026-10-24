@@ -62,6 +62,7 @@
                 ("<backtab>" . dired-subtree-cycle))
     :config
     (setq dired-subtree-use-backgrounds nil)))
+(gsk (kbd "C-x C-d") 'dired) ; list-directory is useless,and should of gone away many years ago.  Just saying.
 
 (defun my/dired-RET ()
   "Open files in the other window"
@@ -84,8 +85,11 @@
   (setq casual-keybinding-primary "M-c"
     casual-keybinding-secondary "M-C"
     ediff-window-setup-function 'ediff-setup-windows-plain)
-  (run-with-idle-timer 1.5 nil (lambda ()      ; I can't just :bind M-h to a λ that loads it and repeats M-h,
-    (casual-init))))                      ; because this beast takes too long to set its tmenu hooks
+  (run-with-idle-timer 1.5 nil (lambda ()      ; I can't just :bind M-c to a λ that loads it and repeats M-c,
+    (casual-init)))                       ; because this beast takes too long to set its tmenu hooks
+  (with-eval-after-load 'transient        ; ESC & C-[ always cancel in my Vim muscle memory
+    (keymap-set transient-base-map "<escape>" #'transient-quit-one)
+    (keymap-set transient-base-map "C-[" #'transient-quit-one)))
 
 
 (use-package helpful                      ; totally worth the extra bloat

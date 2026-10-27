@@ -39,10 +39,12 @@
 
 (defun my/play-after-load ()
   (remove-hook 'emms-info-init-done-hook #'my/play-after-load)
+  (setq emms-track-description-function #'my/emms-track-description)
   (emms-start))
 
 (defun my/shuffle-and-play-after-load ()
   (remove-hook 'emms-info-init-done-hook #'my/shuffle-and-play-after-load)
+  (setq emms-track-description-function #'my/emms-track-description)
   (emms-shuffle)
   (emms-start))
 
@@ -95,17 +97,28 @@
   (add-hook 'emms-info-init-done-hook #'my/shuffle-and-play-after-load)
   (emms-add-directory-tree emms-source-file-default-directory))
 
+(defun my/emms-track-description (track)
+  "Fixes the '<unknown>' artist bug"
+  (let ((artist (emms-track-get track 'info-artist))
+        (title (emms-track-get track 'info-title))
+        (name (emms-track-name track)))
+    (cond
+      ((and artist title (string= artist "<unknown>")) title)
+      ((and artist title) (format "%s - %s" artist title))
+      (title title)
+      (t (file-name-nondirectory name)))))
+
 (use-package emms
   :bind (("s-SPC"     . my/play-pause)
          ("s-S-SPC"   . my/start-playlist)
          ("s-C-SPC"   . my/play-music-library)
          ("s-C-S-SPC" . my/browse-music-library)
-         ("s-R"       . my/start-shuffled-playlist))  ; WTF "s-S-s" does not work!
+         ("s-R"       . my/start-shuffled-playlist))  ; WTF "s-S-r" does not work!
   :hook ((emms-player-started . my/emms-notify)
          (emms-player-paused  . my/emms-pause))
 
   :init
-  (setq emms-source-file-default-directory (expand-file-name "~/Music/")) ; :custom fails to set this for "some" binds, again WTFO!
+  (setq emms-source-file-default-directory (expand-file-name "~/Music/"))
   (add-to-list 'recentf-exclude "emacs/emms/")
 
   :config

@@ -9,13 +9,16 @@
 ;; I don't like LSP's but they are helpful when dealing with mega OOP frameworks
 (use-package eglot
   :ensure nil                                       ; built in for 29+
-  :hook ((java-ts-mode        . eglot-ensure)
-          (eglot-managed-mode . flymake-mode))      ; dynamic linting was a TERRIBLE idea
+  :hook ((java-ts-mode       . eglot-ensure)
+         (python-ts-mode     . eglot-ensure)        ; they do a good integrating the docs
+         (eglot-managed-mode . flymake-mode))       ; dynamic linting was a TERRIBLE idea
 
   :init
   (let ((jdtls (file-truename "~/.local/share/emacs/jdtls/bin")))
     (add-to-list 'exec-path jdtls)
-    (setenv "PATH" (concat jdtls path-separator (getenv "PATH")))))
+    (setenv "PATH" (concat jdtls path-separator (getenv "PATH"))))
+  :config
+  (evil-define-key '(normal visual) eglot-mode-map (kbd "C-q") #'eldoc))
 
 
 ;; Does not auto switch to the file's tree-sitter mode after
@@ -25,7 +28,8 @@
   (setq treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
-  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode)))
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))) ; why did I need this hack?
 
 (use-package treesit-fold                   ; treesit has the best fold support
   :defer t)
@@ -82,6 +86,14 @@
   :bind ("M-p" . rainbow-delimiters-mode)
   :init
   (evil-define-key '(normal visual) 'global (kbd "<M-p>") #'rainbow-delimiters-mode))
+
+
+(use-package toml-mode
+  :mode "\\.toml\\'")
+
+
+(use-package yaml-mode
+  :mode "\\.yml\\'")
 
 
 ;; Tabs

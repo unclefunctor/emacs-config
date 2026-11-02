@@ -2,6 +2,7 @@
 
 (require 'evil)            ; needed for native compilation
 
+
 (use-package org
   :pin  gnu                ; use the latest instead of the built in one
   :mode ("\\.org\\'" . org-mode)
@@ -10,6 +11,7 @@
     (setq-local org-list-indent-offset 4
                 line-spacing 0.05)
 
+    (electric-indent-local-mode 1)
     (visual-wrap-prefix-mode)
     (variable-pitch-mode)
     (visual-line-mode)
@@ -40,14 +42,13 @@
 
   :custom
   (org-log-done 'note)
-  (org-ellipsis " ⌄")
+  (org-ellipsis " ▾")
   (org-hide-emphasis-markers t)
 
   :config
-  (evil-define-key '(normal visual) 'global (kbd "gx") #'org-open-at-point-global)
-
   (use-package org-preview-html           ; HTML preview window
     :commands org-preview-html-mode))
+
 
 (use-package org-superstar
   :defer t
@@ -57,9 +58,16 @@
   (org-superstar-item-bullet-alist '((?* . ?•) (?+ . ?◦) (?- . ?╸)))
   (org-hide-leading-stars t))
 
+
+(use-package evil-org
+  :after org-superstar
+  :hook (org-mode . (lambda () (evil-org-mode))))
+
+
 (use-package org-tempo     ; [[info:org#Structure Templates][org#Structure Templates]]
   :ensure nil              ; built into org
   :after org-superstar)    ; I can't use the org package because something preloads it!
+
 
 (use-package visual-fill-column
   :hook (org-mode . (lambda ()

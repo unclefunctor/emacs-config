@@ -53,7 +53,7 @@
   (dired-create-destination-dirs 'ask)
 
   :config
-  (evil-define-key 'normal dired-mode-map (kbd "<return>") 'my/dired-RET)       ; poor man's treemacs
+  (evil-define-key 'normal dired-mode-map (kbd "<return>") 'my/dired-window)    ; poor man's treemacs
   (evil-define-key 'normal dired-mode-map (kbd "S-<return>") 'dired-find-file)
 
   (use-package dired-subtree
@@ -64,7 +64,7 @@
     (setq dired-subtree-use-backgrounds nil)))
 (gsk (kbd "C-x C-d") 'dired) ; list-directory is useless,and should of gone away many years ago.  Just saying.
 
-(defun my/dired-RET ()
+(defun my/dired-window ()
   "Open files in the other window"
   (interactive)
   (let ((filename (dired-get-filename nil t)))
@@ -164,6 +164,13 @@
 
 (use-package sudo-edit                    ; never leave Emacs!
   :commands sudo-edit)
+
+
+(use-package tramp
+  :ensure nil                             ; built in
+  :defer t
+  :config
+  (setq tramp-default-method "ssh"))
 
 
 (use-package which-key                    ; Emacs has too many key combos to remember

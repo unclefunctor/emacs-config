@@ -2,9 +2,7 @@
 
 (require 'evil)                             ; needed for native compilation
 
-(add-to-list 'auto-mode-alist '("\\.sps\\'" . scheme-mode)) ; chez-scheme file
-
-;; Add folding to the lispys
+;; Add folding support to the lispys
 (add-hook 'emacs-lisp-mode-hook #'hs-minor-mode)
 (add-hook 'scheme-mode-hook #'hs-minor-mode)
 (add-to-list 'evil-fold-list
@@ -15,9 +13,13 @@
                :close     hs-hide-block
                :toggle    hs-toggle-hiding))
 
+
 (use-package racket-mode
-  :mode ("\\.rkt\\'" . racket-mode)
-  :mode ("\\.rhm\\'" . racket-hash-lang-mode)
+  :mode (
+  ("\\.rkt\\'" . racket-mode)
+  ("\\.rhm\\'" . racket-hash-lang-mode)
+  ("\\.scrbl\\'" . racket-hash-lang-mode))
+
   :hook (
   (racket-mode . racket-xp-mode)
   (racket-repl-mode . (lambda ()
@@ -29,14 +31,22 @@
 
   :custom
   (racket-browse-url-function #'eww-browse-url)
+  (racket-documentation-search-location 'local)
 
   :config
   ;; Automatically insert opening bracket
-  (add-hook 'racket-mode-hook #'racket-smart-open-bracket-mode))
+  (add-hook 'racket-mode-hook #'racket-smart-open-bracket-mode)
+
+  (evil-define-key '(normal visual) racket-mode-map (kbd "C-q") #'racket-xp-describe)
+  (evil-define-key '(normal visual) racket-mode-map (kbd "C-j") #'racket-eval-last-sexp))
 
 
 (use-package geiser
   :defer t
+
+  :init
+  (add-to-list 'auto-mode-alist '("\\.sps\\'"   . scheme-mode))   ; chez-scheme file
+
   :hook
   (geiser-repl-mode . (lambda ()
     "My Geiser REPL fixes"
@@ -77,6 +87,17 @@
 (gsk (kbd "M-C-t") 'rash-shell)
 
 
+(defun my/lisp-mode ()
+  "Set my standard Lisp defaults"
+  (setq-local lisp-indent-offset 2)
+  (setq-local tab-width 2)
+  (setq-local standard-indent 2)
+  (setq prettify-symbols-alist '(("lambda" . ?λ)))
+  (prettify-symbols-mode 1)
+
+  (evil-lisp-state))
+
+
 ;; Least painful parens package, I tried the paredit flavors
 ;; and what little benefit I got was overridden by rigid
 ;; formatting and random s-expression corruptions.  This guy
@@ -95,14 +116,6 @@
   ;; I had to add '(evil-lisp-state-global t) to custom.el
   ;; to make it to work on the non-elisp files
   (evil-lisp-state-leader ","))
-
-(defun my/lisp-mode ()
-  "Set my standard Lisp defaults"
-  (setq-local lisp-indent-offset 2)
-  (setq-local tab-width 2)
-  (setq-local standard-indent 2)
-  (prettify-symbols-mode 1)
-  (evil-lisp-state))
 
 (use-package smartparens            ; ^^^'s dependency, TODO needs configuring
   :config

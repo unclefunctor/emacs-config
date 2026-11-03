@@ -6,7 +6,7 @@
 
 (require 'evil)                                     ; needed for native compilation
 
-;; I don't like LSP's but they are helpful when dealing with mega OOP frameworks
+;; I don't like LSP nagging, but they are helpful when dealing with mega OOP frameworks
 (use-package eglot
   :ensure nil                                       ; built in for 29+
   :hook ((java-ts-mode       . eglot-ensure)
@@ -29,12 +29,12 @@
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))) ; why did I need this hack?
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))) ; why did I need this patch?
 
 (use-package treesit-fold                   ; treesit has the best fold support
   :defer t)
 
-(dolist (hook '(c-ts-mode-hook              ; treesit has a different mode name for each filetype
+(dolist (hook '(c-ts-mode-hook              ; treesit has a different mode name for each language
                 c++-ts-mode-hook
                 java-ts-mode-hook
                 python-ts-mode-hook))

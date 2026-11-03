@@ -92,6 +92,9 @@
     :diminish evil-xkbswitch-mode
     :config (evil-xkbswitch-mode 1))
 
+  (use-package evim                   ; multicursors similar to mg979/vim-visual-multi
+    :config (evim-setup-global-keys))
+
   ;; Relative line numbers are essential in Vim mode
   (setq display-line-numbers-type 'relative)
   (setq display-line-numbers-width 3)

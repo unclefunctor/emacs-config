@@ -27,6 +27,18 @@
 
 (defvar my/playlist nil)
 
+(defun my/volume-raise ()
+  "Raise emms' volume"
+  (interactive)
+  (require 'emms)           ; I may call this before the first playlist loads
+  (emms-volume-raise))
+
+(defun my/volume-lower ()
+  "Lower emms' volume"
+  (interactive)
+  (require 'emms)           ; I may call this before the first playlist loads
+  (emms-volume-lower))
+
 (defun my/select-playlist ()
   (require 'emms)
   (let ((path (read-file-name "Playlist file: "
@@ -143,5 +155,5 @@
   (gsk (kbd "s-N")             #'my/previous-replay) ; "s-S-n" does not work either
   (gsk (kbd "<XF86AudioPrev>") #'my/previous-replay)
   (gsk (kbd "s-r")             #'emms-shuffle)
-  (gsk (kbd "s-C-v")           #'emms-volume-raise)  ; in my DE, s-v raises the master PC volume
-  (gsk (kbd "s-C-S-v")         #'emms-volume-lower)) ;    ""     s-V lowers the master PC volume
+  (gsk (kbd "s-C-v")           #'my/volume-raise)  ; in my DE, s-v raises the master PC volume
+  (gsk (kbd "s-C-S-v")         #'my/volume-lower)) ;    ""     s-V lowers the master PC volume

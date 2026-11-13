@@ -170,7 +170,7 @@
   :ensure nil                             ; built in
   :defer t
   :config
-  (setq tramp-default-method "ssh"))
+  (setq tramp-default-method "scpx"))     ; /ssh and /scp hang on my custom prompts
 
 
 (use-package which-key                    ; Emacs has too many key combos to remember
@@ -179,6 +179,7 @@
   (which-key-mode)
   (setq which-key-popup-type 'side-window
         which-key-side-window-location 'bottom))
+
 
 (use-package eww
   :ensure nil

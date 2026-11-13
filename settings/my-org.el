@@ -46,6 +46,11 @@
   (org-hide-emphasis-markers t)
 
   :config
+  (setq org-confirm-babel-evaluate nil)
+  (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)
+                                                           (python . t)
+                                                           (scheme . t)))
+
   (use-package org-preview-html           ; HTML preview window
     :commands org-preview-html-mode))
 

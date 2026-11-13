@@ -6,15 +6,15 @@
 
 (require 'evil)                                     ; needed for native compilation
 
-;; I don't like LSP nagging, but they are helpful when dealing with mega OOP frameworks
+;; LSP nagging breaks my "flow", but they are helpful when navigating mega OOP frameworks
 (use-package eglot
   :ensure nil                                       ; built in for 29+
   :hook ((java-ts-mode       . eglot-ensure)
-         (python-ts-mode     . eglot-ensure)        ; they do a good integrating the docs
+         (python-ts-mode     . eglot-ensure)        ; eldoc seems to work with Python library docs
          (eglot-managed-mode . flymake-mode))       ; dynamic linting was a TERRIBLE idea
 
   :init
-  (let ((jdtls (file-truename "~/.local/share/emacs/jdtls/bin")))
+  (let ((jdtls (file-truename "~/.local/share/emacs/jdtls/bin"))) ; 1.59.0-SNAPSHOT, newer versions require JDK25
     (add-to-list 'exec-path jdtls)
     (setenv "PATH" (concat jdtls path-separator (getenv "PATH"))))
   :config
@@ -48,6 +48,10 @@
     ;; Construct "major-mode"-indent-offset variable name and then set it to 3
     (let ((ts-off (intern (concat (symbol-name major-mode) "-indent-offset"))))
       (when (boundp ts-off) (set (make-local-variable ts-off) 3))))))
+
+
+(use-package envrc                          ; project level .envrc files for env variables
+  :hook (after-init . envrc-global-mode))
 
 
 (use-package font-lock                      ; JetBrains spoiled me

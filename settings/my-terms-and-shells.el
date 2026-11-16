@@ -72,13 +72,13 @@
 
   (setq eshell-prompt-function #'(lambda ()
     (concat
-      (propertize "╭" 'face '(:foreground "firebrick2"))
-      (propertize "[" 'face '(:foreground "firebrick2" :weight bold))
+      (propertize "┏" 'face '(:foreground "MediumPurple2"))
+      (propertize "[" 'face '(:foreground "MediumPurple2" :weight bold))
       (abbreviate-file-name (eshell/pwd))
-      (propertize "]" 'face '(:foreground "firebrick2" :weight bold))
+      (propertize "]" 'face '(:foreground "MediumPurple2" :weight bold))
       "\n"
-      (propertize "λ" 'face '(:foreground "MediumPurple2" :weight bold)) ; purpur shows that it is an e(macs)shell
-      " ")))                                                             ; and not vterm (gold)
+      (propertize "ࠋ" 'face '(:foreground "MediumPurple2" :weight bold)) ; purpur shows that it is an e(macs)shell
+      " ")))                                                             ; and not vterm (red)
   (setq eshell-prompt-regexp "^λ ")
 
   ;; Ripped from https://github.com/agzam/mxp (shell script to pipe in and out of Emacs)

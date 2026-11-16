@@ -33,6 +33,7 @@
 (setq
   frame-resize-pixelwise t        ; stop randomly resizing! I should not have to
   frame-inhibit-implied-resize t  ; patch this in 2026 WTFO!
+  frame-title-format "Emacs %@ %b"
   scroll-margin 1
   scroll-conservatively 0
   scroll-up-aggressively 0.01

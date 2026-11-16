@@ -66,11 +66,12 @@
            (lp (point)))
       (goto-char ip)
       (insert "; ⇒ ")
-      (goto-char (+ lp 4)))))
+      (goto-char (+ lp 4))))))
 
-  (setq geiser-chez-binary "/usr/bin/chez-scheme")
-  (use-package geiser-chez
-    :after geiser))
+(use-package geiser-chez
+  :defer t
+  :init
+  (setq geiser-chez-binary "/usr/bin/chez-scheme"))
 
 
 (defun rash-shell ()

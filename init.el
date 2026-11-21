@@ -47,12 +47,12 @@
       (byte-compile-file true-name)
       (native-compile true-name)))) ; auto native comp is bugged and randomly running old binaries makes coding HELL
 (add-hook 'after-save-hook #'my/auto-config-compile)
+(setq native-comp-async-report-warnings-errors 'silent)
 
 
 (require 'use-package)
 (setq use-package-always-ensure t)      ; well duh...
 (setq use-package-compute-statistics t)
-
 
 ;;
 ;; It got too big so I organized it into multiple files
@@ -60,17 +60,17 @@
 (add-to-list 'load-path my/config-dir)
 (load-library "my-evil")                ; must be first!
 
-(dolist (hack '("my-terms-and-shells"   ; appending '.el' stops the auto native compile!
-                "my-convenience"
-                "my-minibuffer"
-                "my-theme"
-                "my-music"
-                "my-lisps"
-                "my-lang"
-                "my-org"
-                "my-tts"
-                "my-fun"))
-  (load-library hack))
+(dolist (my-lib '("my-terms-and-shells"   ; appending '.el' stops the auto native compile!
+                  "my-convenience"
+                  "my-minibuffer"
+                  "my-theme"
+                  "my-music"
+                  "my-lisps"
+                  "my-lang"
+                  "my-org"
+                  "my-tts"
+                  "my-fun"))
+  (load-library my-lib))
 
 
 ;; Done loading, start the server for emacsclient calls

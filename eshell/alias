@@ -16,7 +16,7 @@ alias ll ls -l $@*
 alias ln ln -i $@*
 alias mkdir mkdir -pv $@*
 alias mv mv -i $@*
-alias resync stc rescan all $@*
+alias resync stc -homedir /home/psd/.local/state/syncthing/ rescan all
 alias rm rm -i $@*
 alias stc stc -homedir "~/.local/state/syncthing/" $@*
 alias tree tree -C $@*

@@ -217,6 +217,20 @@
       (t
         (insert-tab)))))                        ; otherwise just insert the tab
 
+  (gsk (kbd "<f6>") (lambda ()
+    "Execute the current line"
+    (interactive)
+    (let* ((line (thing-at-point 'line t))
+           (cmd (string-trim line)))
+        (unless (string-empty-p cmd) (shell-command cmd)))))
+
+  (gsk (kbd "S-<f6>") (lambda ()
+    "Execute the current selection"
+    (interactive)
+    (let* ((selection (buffer-substring-no-properties (region-beginning) (region-end)))
+           (cmd (string-trim selection)))
+        (unless (string-empty-p cmd) (shell-command cmd)))))
+
   ;; A minimal version of my vim-delete-ws plugin; '.' works, but visual block
   ;; does not. TODO write your own package :)
   (evil-define-motion evil-forward-space (count)
